@@ -44,7 +44,7 @@ fun LoginPantalla(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Logo o título
+
             Text(
                 text = "Bee Beauty Care",
                 style = MaterialTheme.typography.displayLarge,
@@ -59,7 +59,7 @@ fun LoginPantalla(
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // Campo de usuario
+
             OutlinedTextField(
                 value = usuario,
                 onValueChange = { usuario = it },
@@ -72,7 +72,7 @@ fun LoginPantalla(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo de contraseña
+
             OutlinedTextField(
                 value = contrasena,
                 onValueChange = { contrasena = it },
@@ -99,7 +99,7 @@ fun LoginPantalla(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Botón de iniciar sesión
+
             Button(
                 onClick = {
                     if (usuario.isBlank() || contrasena.isBlank()) {
@@ -136,7 +136,7 @@ fun LoginPantalla(
                                 val respuesta = response.body()!!
                                 val usuarioData = respuesta.usuario!!
 
-                                // Validar rol
+
                                 if (usuarioData.rol == "administrador" || usuarioData.rol == "recepcionista") {
                                     Toast.makeText(
                                         contexto,
@@ -191,7 +191,7 @@ fun LoginPantalla(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Información de usuarios de prueba
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -221,7 +221,7 @@ fun LoginPantalla(
     }
 }
 
-// Función para cifrar contraseña
+
 fun cifrarSHA256(texto: String): String {
     val bytes = MessageDigest.getInstance("SHA-256").digest(texto.toByteArray())
     return bytes.joinToString("") { "%02x".format(it) }

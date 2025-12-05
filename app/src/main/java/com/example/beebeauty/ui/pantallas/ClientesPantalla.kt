@@ -38,7 +38,7 @@ fun ClientesPantalla(
     var clienteEditar by remember { mutableStateOf<ClienteResponse?>(null) }
     var busqueda by remember { mutableStateOf("") }
 
-    // Cargar clientes
+
     LaunchedEffect(Unit) {
         cargarListaClientes { listaClientes ->
             clientes = listaClientes
@@ -46,7 +46,7 @@ fun ClientesPantalla(
         }
     }
 
-    // Filtrar clientes por búsqueda
+
     val clientesFiltrados = remember(clientes, busqueda) {
         if (busqueda.isBlank()) {
             clientes
@@ -84,7 +84,7 @@ fun ClientesPantalla(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            // Buscador
+
             OutlinedTextField(
                 value = busqueda,
                 onValueChange = { busqueda = it },
@@ -168,7 +168,7 @@ fun ClientesPantalla(
         }
     }
 
-    // Diálogo nuevo cliente
+
     if (mostrarDialogoNuevo) {
         DialogoClienteFormulario(
             titulo = "Nuevo Cliente",
@@ -196,7 +196,7 @@ fun ClientesPantalla(
         )
     }
 
-    // Diálogo editar cliente
+
     if (mostrarDialogoEditar && clienteEditar != null) {
         DialogoClienteFormulario(
             titulo = "Editar Cliente",
@@ -284,7 +284,7 @@ fun TarjetaCliente(
                         )
                     }
 
-                    // Mostrar estadísticas si existen
+
                     if (cliente.numeroReservaciones != null && cliente.numeroReservaciones > 0) {
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
@@ -296,7 +296,7 @@ fun TarjetaCliente(
                     }
                 }
 
-                // Menú de opciones
+
                 Box {
                     IconButton(onClick = { mostrarMenuOpciones = true }) {
                         Icon(Icons.Default.MoreVert, "Opciones")
@@ -422,7 +422,7 @@ fun DialogoClienteFormulario(
     )
 }
 
-// Funciones de API
+
 fun cargarListaClientes(alCompletar: (List<ClienteResponse>) -> Unit) {
     android.util.Log.d("CLIENTES_DEBUG", "==== CARGANDO CLIENTES ====")
 

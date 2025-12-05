@@ -41,7 +41,7 @@ fun NuevaCitaPantalla(
 ) {
     val contexto = LocalContext.current
 
-    // Estados
+
     var clientes by remember { mutableStateOf<List<ClienteResponse>>(emptyList()) }
     var servicios by remember { mutableStateOf<List<ServicioResponse>>(emptyList()) }
     var empleados by remember { mutableStateOf<List<EmpleadoResponse>>(emptyList()) }
@@ -60,13 +60,12 @@ fun NuevaCitaPantalla(
     var cargandoEmpleados by remember { mutableStateOf(false) }
     var cargandoHorarios by remember { mutableStateOf(false) }
 
-    // Cargar datos iniciales
     LaunchedEffect(Unit) {
         cargarClientesNuevaCita { clientes = it }
         cargarServiciosNuevaCita { servicios = it }
     }
 
-    // Cargar empleados cuando se seleccionan servicios y fecha
+
     LaunchedEffect(serviciosSeleccionados, fechaSeleccionada) {
         try {
             if (serviciosSeleccionados.isNotEmpty() && fechaSeleccionada.isNotEmpty()) {
@@ -147,7 +146,6 @@ fun NuevaCitaPantalla(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Resumen
             item {
                 ResumenCitaNueva(
                     cliente = clienteSeleccionado,
@@ -158,7 +156,6 @@ fun NuevaCitaPantalla(
                 )
             }
 
-            // 1. Seleccionar Cliente
             item {
                 SeccionFormularioNuevaCita(
                     titulo = "1. Cliente",
@@ -182,8 +179,6 @@ fun NuevaCitaPantalla(
                     }
                 }
             }
-
-            // 2. Seleccionar Fecha
             item {
                 SeccionFormularioNuevaCita(
                     titulo = "2. Fecha",
@@ -204,8 +199,7 @@ fun NuevaCitaPantalla(
                 }
             }
 
-            // 3. Seleccionar Servicios
-            // 3. Seleccionar Servicios
+
             item {
                 SeccionFormularioNuevaCita(
                     titulo = "3. Servicios",
@@ -245,7 +239,7 @@ fun NuevaCitaPantalla(
                 }
             }
 
-            // 4. Seleccionar Empleado
+
             if (serviciosSeleccionados.isNotEmpty() && fechaSeleccionada.isNotEmpty()) {
                 item {
                     SeccionFormularioNuevaCita(
@@ -288,7 +282,7 @@ fun NuevaCitaPantalla(
                 }
             }
 
-            // 5. Seleccionar Horario
+
             if (empleadoSeleccionado != null) {
                 item {
                     SeccionFormularioNuevaCita(
@@ -334,7 +328,6 @@ fun NuevaCitaPantalla(
                                                     )
                                                 }
                                             }
-                                            // Rellenar espacios vacíos
                                             repeat(3 - fila.size) {
                                                 Spacer(modifier = Modifier.weight(1f))
                                             }
@@ -348,7 +341,7 @@ fun NuevaCitaPantalla(
                 }
             }
 
-            // 6. Notas (opcional)
+
             item {
                 SeccionFormularioNuevaCita(
                     titulo = "6. Notas (Opcional)",
@@ -366,7 +359,7 @@ fun NuevaCitaPantalla(
                 }
             }
 
-            // Botón Agendar
+
             item {
                 Button(
                     onClick = {
@@ -383,11 +376,10 @@ fun NuevaCitaPantalla(
 
                         cargando = true
 
-                        // Crear lista de ServicioSolicitud con IDs dummy (id_empserv = 1)
-                        // NOTA: Idealmente esto debería obtenerse del backend
+
                         val serviciosSolicitud = serviciosSeleccionados.mapIndexed { index, servicio ->
                             ServicioSolicitud(
-                                idEmpserv = 1, // TEMPORAL - debe obtenerse de /api/empleados/{id}/servicios/{id}
+                                idEmpserv = 1,
                                 orden = index + 1,
                                 duracion = servicio.duracion
                             )
@@ -467,7 +459,6 @@ fun NuevaCitaPantalla(
         }
     }
 
-    // Diálogo selector de cliente
     if (mostrarSelectorCliente) {
         DialogoSelectorClienteNuevaCita(
             clientes = clientes,
@@ -479,7 +470,6 @@ fun NuevaCitaPantalla(
         )
     }
 
-    // Date Picker
     if (mostrarDatePicker) {
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DAY_OF_YEAR, 1)
@@ -888,7 +878,6 @@ fun DialogoSelectorClienteNuevaCita(
     )
 }
 
-// Funciones auxiliares
 fun obtenerInicialesEmpleado(nombre: String): String {
     return nombre.split(" ")
         .mapNotNull { it.firstOrNull()?.uppercaseChar() }
@@ -964,22 +953,22 @@ fun cargarEmpleadosDisponiblesNuevaCita(
 
                             if (body?.success == true) {
                                 val empleados = body.data ?: emptyList()
-                                android.util.Log.d("EMPLEADOS_DEBUG", "✅ Empleados encontrados: ${empleados.size}")
+                                android.util.Log.d("EMPLEADOS_DEBUG", "Empleados encontrados: ${empleados.size}")
                                 empleados.forEach { emp ->
                                     android.util.Log.d("EMPLEADOS_DEBUG", "  - ${emp.nombre} (ID: ${emp.idEmpleado})")
                                 }
                                 alCompletar(empleados)
                             } else {
-                                android.util.Log.w("EMPLEADOS_DEBUG", "⚠️ Success = false: ${body?.message}")
+                                android.util.Log.w("EMPLEADOS_DEBUG", "Success = false: ${body?.message}")
                                 alCompletar(emptyList())
                             }
                         } else {
                             val errorBody = response.errorBody()?.string()
-                            android.util.Log.e("EMPLEADOS_DEBUG", "❌ Error HTTP: $errorBody")
+                            android.util.Log.e("EMPLEADOS_DEBUG", "Error HTTP: $errorBody")
                             alCompletar(emptyList())
                         }
                     } catch (e: Exception) {
-                        android.util.Log.e("EMPLEADOS_DEBUG", "❌ Error procesando respuesta: ${e.message}", e)
+                        android.util.Log.e("EMPLEADOS_DEBUG", "Error procesando respuesta: ${e.message}", e)
                         alCompletar(emptyList())
                     }
                 }
@@ -988,13 +977,13 @@ fun cargarEmpleadosDisponiblesNuevaCita(
                     call: Call<RespuestaApi<List<EmpleadoResponse>>>,
                     t: Throwable
                 ) {
-                    android.util.Log.e("EMPLEADOS_DEBUG", "❌ Fallo de conexión: ${t.message}", t)
+                    android.util.Log.e("EMPLEADOS_DEBUG", "Fallo de conexión: ${t.message}", t)
                     alCompletar(emptyList())
                 }
             }
         )
     } catch (e: Exception) {
-        android.util.Log.e("EMPLEADOS_DEBUG", "❌ Error al crear llamada: ${e.message}", e)
+        android.util.Log.e("EMPLEADOS_DEBUG", "Error al crear llamada: ${e.message}", e)
         alCompletar(emptyList())
     }
 }
@@ -1030,15 +1019,15 @@ fun cargarHorariosDisponiblesNuevaCita(
                         if (response.isSuccessful && response.body()?.success == true) {
                             val horariosResponse = response.body()?.data
                             val horarios = horariosResponse?.slots ?: emptyList()
-                            android.util.Log.d("HORARIOS_DEBUG", "✅ Horarios encontrados: ${horarios.size}")
+                            android.util.Log.d("HORARIOS_DEBUG", "Horarios encontrados: ${horarios.size}")
                             alCompletar(horarios)
                         } else {
                             val errorBody = response.errorBody()?.string()
-                            android.util.Log.e("HORARIOS_DEBUG", "❌ Error: $errorBody")
+                            android.util.Log.e("HORARIOS_DEBUG", " Error: $errorBody")
                             alCompletar(emptyList())
                         }
                     } catch (e: Exception) {
-                        android.util.Log.e("HORARIOS_DEBUG", "❌ Error procesando: ${e.message}", e)
+                        android.util.Log.e("HORARIOS_DEBUG", "Error procesando: ${e.message}", e)
                         alCompletar(emptyList())
                     }
                 }
@@ -1047,13 +1036,13 @@ fun cargarHorariosDisponiblesNuevaCita(
                     call: Call<RespuestaApi<HorariosResponse>>,
                     t: Throwable
                 ) {
-                    android.util.Log.e("HORARIOS_DEBUG", "❌ Fallo: ${t.message}", t)
+                    android.util.Log.e("HORARIOS_DEBUG", "Fallo: ${t.message}", t)
                     alCompletar(emptyList())
                 }
             }
         )
     } catch (e: Exception) {
-        android.util.Log.e("HORARIOS_DEBUG", "❌ Error: ${e.message}", e)
+        android.util.Log.e("HORARIOS_DEBUG", "Error: ${e.message}", e)
         alCompletar(emptyList())
     }
 }

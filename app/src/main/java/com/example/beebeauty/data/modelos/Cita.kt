@@ -13,7 +13,7 @@ data class Cita(
     val duracion: Int,
     val notas: String?,
 
-    // Relaciones
+
     val cliente: Cliente?,
     val empleado: Empleado?,
     val servicios: List<ServicioCita>?

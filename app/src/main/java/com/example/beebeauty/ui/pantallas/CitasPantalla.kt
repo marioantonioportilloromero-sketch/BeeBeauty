@@ -43,7 +43,7 @@ fun CitasPantalla(
     var mostrarDialogoEstado by remember { mutableStateOf(false) }
     val contexto = LocalContext.current
 
-    // Cargar citas
+
     LaunchedEffect(Unit) {
         cargarCitas { listaCitas ->
             citas = listaCitas
@@ -88,7 +88,7 @@ fun CitasPantalla(
         }
     ) { padding ->
         Row(modifier = Modifier.fillMaxSize()) {
-            // Menú lateral
+
             if (mostrarMenu) {
                 Surface(
                     modifier = Modifier
@@ -151,7 +151,7 @@ fun CitasPantalla(
                 }
             }
 
-            // Contenido principal
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -202,7 +202,7 @@ fun CitasPantalla(
         }
     }
 
-    // Diálogo para cambiar estado
+
     if (mostrarDialogoEstado && citaSeleccionada != null) {
         DialogoCambiarEstado(
             cita = citaSeleccionada!!,
@@ -329,7 +329,7 @@ fun TarjetaCita(
                 )
             }
 
-            // Mostrar servicios si existen
+
             if (cita.serviciosNombres.isNotBlank()) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
