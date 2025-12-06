@@ -41,7 +41,6 @@ fun NuevaCitaPantalla(
 ) {
     val contexto = LocalContext.current
 
-
     var clientes by remember { mutableStateOf<List<ClienteResponse>>(emptyList()) }
     var servicios by remember { mutableStateOf<List<ServicioResponse>>(emptyList()) }
     var empleados by remember { mutableStateOf<List<EmpleadoResponse>>(emptyList()) }
@@ -65,7 +64,6 @@ fun NuevaCitaPantalla(
         cargarServiciosNuevaCita { servicios = it }
     }
 
-
     LaunchedEffect(serviciosSeleccionados, fechaSeleccionada) {
         try {
             if (serviciosSeleccionados.isNotEmpty() && fechaSeleccionada.isNotEmpty()) {
@@ -74,16 +72,9 @@ fun NuevaCitaPantalla(
                 horarioSeleccionado = null
                 horarios = emptyList()
 
-                android.util.Log.d("NUEVA_CITA", "Cargando empleados para servicios: ${serviciosSeleccionados.map { it.idServicio }}")
-
                 val idsServicios = serviciosSeleccionados.map { it.idServicio }
-                val datos = mapOf(
-                    "servicios" to idsServicios,
-                    "fecha" to fechaSeleccionada
-                )
 
                 cargarEmpleadosDisponiblesNuevaCita(idsServicios, fechaSeleccionada) { empleadosDisponibles ->
-                    android.util.Log.d("NUEVA_CITA", "Empleados recibidos: ${empleadosDisponibles.size}")
                     empleados = empleadosDisponibles
                     cargandoEmpleados = false
                 }
@@ -112,7 +103,6 @@ fun NuevaCitaPantalla(
                     fechaSeleccionada,
                     duracionTotal
                 ) { horariosDisponibles ->
-                    android.util.Log.d("NUEVA_CITA", "Horarios recibidos: ${horariosDisponibles.size}")
                     horarios = horariosDisponibles
                     cargandoHorarios = false
                 }
@@ -179,6 +169,7 @@ fun NuevaCitaPantalla(
                     }
                 }
             }
+
             item {
                 SeccionFormularioNuevaCita(
                     titulo = "2. Fecha",
@@ -199,7 +190,6 @@ fun NuevaCitaPantalla(
                 }
             }
 
-
             item {
                 SeccionFormularioNuevaCita(
                     titulo = "3. Servicios",
@@ -216,17 +206,11 @@ fun NuevaCitaPantalla(
                                     seleccionado = serviciosSeleccionados.contains(servicio),
                                     alClick = {
                                         try {
-                                            android.util.Log.d("NUEVA_CITA", "Click en servicio: ${servicio.nombre}")
-
                                             serviciosSeleccionados = if (serviciosSeleccionados.contains(servicio)) {
-                                                android.util.Log.d("NUEVA_CITA", "Deseleccionando servicio")
                                                 serviciosSeleccionados - servicio
                                             } else {
-                                                android.util.Log.d("NUEVA_CITA", "Seleccionando servicio")
                                                 serviciosSeleccionados + servicio
                                             }
-
-                                            android.util.Log.d("NUEVA_CITA", "Servicios seleccionados: ${serviciosSeleccionados.size}")
                                         } catch (e: Exception) {
                                             android.util.Log.e("NUEVA_CITA", "Error al seleccionar servicio: ${e.message}", e)
                                         }
@@ -238,7 +222,6 @@ fun NuevaCitaPantalla(
                     }
                 }
             }
-
 
             if (serviciosSeleccionados.isNotEmpty() && fechaSeleccionada.isNotEmpty()) {
                 item {
@@ -281,7 +264,6 @@ fun NuevaCitaPantalla(
                     }
                 }
             }
-
 
             if (empleadoSeleccionado != null) {
                 item {
@@ -341,7 +323,6 @@ fun NuevaCitaPantalla(
                 }
             }
 
-
             item {
                 SeccionFormularioNuevaCita(
                     titulo = "6. Notas (Opcional)",
@@ -359,7 +340,6 @@ fun NuevaCitaPantalla(
                 }
             }
 
-
             item {
                 Button(
                     onClick = {
@@ -375,7 +355,6 @@ fun NuevaCitaPantalla(
                         }
 
                         cargando = true
-
 
                         val serviciosSolicitud = serviciosSeleccionados.mapIndexed { index, servicio ->
                             ServicioSolicitud(
@@ -395,16 +374,12 @@ fun NuevaCitaPantalla(
                             notas = notas.ifBlank { null }
                         )
 
-                        android.util.Log.d("NUEVA_CITA", "Enviando solicitud: $solicitud")
-
                         RetrofitClient.api.crearCita(solicitud).enqueue(object : Callback<RespuestaApi<CitaResponse>> {
                             override fun onResponse(
                                 call: Call<RespuestaApi<CitaResponse>>,
                                 response: Response<RespuestaApi<CitaResponse>>
                             ) {
                                 cargando = false
-                                android.util.Log.d("NUEVA_CITA", "Respuesta: ${response.code()}")
-                                android.util.Log.d("NUEVA_CITA", "Body: ${response.body()}")
 
                                 if (response.isSuccessful && response.body()?.success == true) {
                                     Toast.makeText(
@@ -425,7 +400,6 @@ fun NuevaCitaPantalla(
 
                             override fun onFailure(call: Call<RespuestaApi<CitaResponse>>, t: Throwable) {
                                 cargando = false
-                                android.util.Log.e("NUEVA_CITA", "Error: ${t.message}", t)
                                 Toast.makeText(
                                     contexto,
                                     "Error de conexión: ${t.message}",
@@ -471,11 +445,40 @@ fun NuevaCitaPantalla(
     }
 
     if (mostrarDatePicker) {
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DAY_OF_YEAR, 1)
+        val minCalendar = Calendar.getInstance()
+        minCalendar.add(Calendar.DAY_OF_YEAR, 1)
+        minCalendar.set(Calendar.HOUR_OF_DAY, 0)
+        minCalendar.set(Calendar.MINUTE, 0)
+        minCalendar.set(Calendar.SECOND, 0)
+        minCalendar.set(Calendar.MILLISECOND, 0)
 
         val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = calendar.timeInMillis
+            initialSelectedDateMillis = minCalendar.timeInMillis,
+            selectableDates = object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                    val date = Calendar.getInstance().apply {
+                        timeInMillis = utcTimeMillis
+                    }
+
+                    if (date.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+                        return false
+                    }
+
+                    val hoy = Calendar.getInstance().apply {
+                        set(Calendar.HOUR_OF_DAY, 0)
+                        set(Calendar.MINUTE, 0)
+                        set(Calendar.SECOND, 0)
+                        set(Calendar.MILLISECOND, 0)
+                    }
+
+                    return date.after(hoy)
+                }
+
+                override fun isSelectableYear(year: Int): Boolean {
+                    val añoActual = Calendar.getInstance().get(Calendar.YEAR)
+                    return year >= añoActual && year <= añoActual + 10
+                }
+            }
         )
 
         DatePickerDialog(
@@ -485,9 +488,22 @@ fun NuevaCitaPantalla(
                     datePickerState.selectedDateMillis?.let { millis ->
                         val date = Date(millis)
                         val formato = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                        fechaSeleccionada = formato.format(date)
+                        val fechaString = formato.format(date)
+
+                        val calendar = Calendar.getInstance()
+                        calendar.time = date
+
+                        if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+                            Toast.makeText(
+                                contexto,
+                                "Los domingos no hay atención",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            fechaSeleccionada = fechaString
+                            mostrarDatePicker = false
+                        }
                     }
-                    mostrarDatePicker = false
                 }) {
                     Text("Aceptar")
                 }
@@ -499,53 +515,6 @@ fun NuevaCitaPantalla(
             }
         ) {
             DatePicker(state = datePickerState)
-        }
-    }
-}
-
-@Composable
-fun SeccionFormularioNuevaCita(
-    titulo: String,
-    icono: androidx.compose.ui.graphics.vector.ImageVector,
-    completado: Boolean,
-    contenido: @Composable () -> Unit
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(2.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    icono,
-                    contentDescription = null,
-                    tint = if (completado) ColorAcento else MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    titulo,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                if (completado) {
-                    Icon(
-                        Icons.Default.CheckCircle,
-                        contentDescription = "Completado",
-                        tint = ColorAcento,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            contenido()
         }
     }
 }
@@ -627,6 +596,53 @@ fun ResumenCitaNueva(
                     color = ColorAcento
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun SeccionFormularioNuevaCita(
+    titulo: String,
+    icono: androidx.compose.ui.graphics.vector.ImageVector,
+    completado: Boolean,
+    contenido: @Composable () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(2.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    icono,
+                    contentDescription = null,
+                    tint = if (completado) ColorAcento else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    titulo,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                if (completado) {
+                    Icon(
+                        Icons.Default.CheckCircle,
+                        contentDescription = "Completado",
+                        tint = ColorAcento,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            contenido()
         }
     }
 }
@@ -927,10 +943,6 @@ fun cargarEmpleadosDisponiblesNuevaCita(
     alCompletar: (List<EmpleadoResponse>) -> Unit
 ) {
     try {
-        android.util.Log.d("EMPLEADOS_DEBUG", "==== BUSCANDO EMPLEADOS ====")
-        android.util.Log.d("EMPLEADOS_DEBUG", "Servicios: $servicios")
-        android.util.Log.d("EMPLEADOS_DEBUG", "Fecha: $fecha")
-
         val solicitud = EmpleadosDisponiblesRequest(
             servicios = servicios,
             fecha = fecha
@@ -943,47 +955,23 @@ fun cargarEmpleadosDisponiblesNuevaCita(
                     response: Response<RespuestaApi<List<EmpleadoResponse>>>
                 ) {
                     try {
-                        android.util.Log.d("EMPLEADOS_DEBUG", "Código respuesta: ${response.code()}")
-                        android.util.Log.d("EMPLEADOS_DEBUG", "Exitoso: ${response.isSuccessful}")
-
-                        if (response.isSuccessful) {
-                            val body = response.body()
-                            android.util.Log.d("EMPLEADOS_DEBUG", "Body success: ${body?.success}")
-                            android.util.Log.d("EMPLEADOS_DEBUG", "Body data: ${body?.data}")
-
-                            if (body?.success == true) {
-                                val empleados = body.data ?: emptyList()
-                                android.util.Log.d("EMPLEADOS_DEBUG", "Empleados encontrados: ${empleados.size}")
-                                empleados.forEach { emp ->
-                                    android.util.Log.d("EMPLEADOS_DEBUG", "  - ${emp.nombre} (ID: ${emp.idEmpleado})")
-                                }
-                                alCompletar(empleados)
-                            } else {
-                                android.util.Log.w("EMPLEADOS_DEBUG", "Success = false: ${body?.message}")
-                                alCompletar(emptyList())
-                            }
+                        if (response.isSuccessful && response.body()?.success == true) {
+                            val empleados = response.body()?.data ?: emptyList()
+                            alCompletar(empleados)
                         } else {
-                            val errorBody = response.errorBody()?.string()
-                            android.util.Log.e("EMPLEADOS_DEBUG", "Error HTTP: $errorBody")
                             alCompletar(emptyList())
                         }
                     } catch (e: Exception) {
-                        android.util.Log.e("EMPLEADOS_DEBUG", "Error procesando respuesta: ${e.message}", e)
                         alCompletar(emptyList())
                     }
                 }
 
-                override fun onFailure(
-                    call: Call<RespuestaApi<List<EmpleadoResponse>>>,
-                    t: Throwable
-                ) {
-                    android.util.Log.e("EMPLEADOS_DEBUG", "Fallo de conexión: ${t.message}", t)
+                override fun onFailure(call: Call<RespuestaApi<List<EmpleadoResponse>>>, t: Throwable) {
                     alCompletar(emptyList())
                 }
             }
         )
     } catch (e: Exception) {
-        android.util.Log.e("EMPLEADOS_DEBUG", "Error al crear llamada: ${e.message}", e)
         alCompletar(emptyList())
     }
 }
@@ -995,11 +983,6 @@ fun cargarHorariosDisponiblesNuevaCita(
     alCompletar: (List<SlotHorario>) -> Unit
 ) {
     try {
-        android.util.Log.d("HORARIOS_DEBUG", "==== BUSCANDO HORARIOS ====")
-        android.util.Log.d("HORARIOS_DEBUG", "Empleado: $idEmpleado")
-        android.util.Log.d("HORARIOS_DEBUG", "Fecha: $fecha")
-        android.util.Log.d("HORARIOS_DEBUG", "Duración: $duracionTotal")
-
         val solicitud = HorariosDisponiblesRequest(
             idEmpleado = idEmpleado,
             fecha = fecha,
@@ -1013,36 +996,24 @@ fun cargarHorariosDisponiblesNuevaCita(
                     response: Response<RespuestaApi<HorariosResponse>>
                 ) {
                     try {
-                        android.util.Log.d("HORARIOS_DEBUG", "Código respuesta: ${response.code()}")
-                        android.util.Log.d("HORARIOS_DEBUG", "Exitoso: ${response.isSuccessful}")
-
                         if (response.isSuccessful && response.body()?.success == true) {
                             val horariosResponse = response.body()?.data
                             val horarios = horariosResponse?.slots ?: emptyList()
-                            android.util.Log.d("HORARIOS_DEBUG", "Horarios encontrados: ${horarios.size}")
                             alCompletar(horarios)
                         } else {
-                            val errorBody = response.errorBody()?.string()
-                            android.util.Log.e("HORARIOS_DEBUG", " Error: $errorBody")
                             alCompletar(emptyList())
                         }
                     } catch (e: Exception) {
-                        android.util.Log.e("HORARIOS_DEBUG", "Error procesando: ${e.message}", e)
                         alCompletar(emptyList())
                     }
                 }
 
-                override fun onFailure(
-                    call: Call<RespuestaApi<HorariosResponse>>,
-                    t: Throwable
-                ) {
-                    android.util.Log.e("HORARIOS_DEBUG", "Fallo: ${t.message}", t)
+                override fun onFailure(call: Call<RespuestaApi<HorariosResponse>>, t: Throwable) {
                     alCompletar(emptyList())
                 }
             }
         )
     } catch (e: Exception) {
-        android.util.Log.e("HORARIOS_DEBUG", "Error: ${e.message}", e)
         alCompletar(emptyList())
     }
 }
