@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 // Colores del sistema Bee Beauty Care
 val ColorPrincipal = Color(0xFF517282)
-val ColorSecundario = Color(0xFFE8D9C3)
+val ColorSecundario = Color(0xFFE5DCCF)
 val ColorAcento = Color(0xFFA2952F)
 val ColorFondo = Color(0xFFFAF9FB)
 val ColorTexto = Color(0xFF2F2F2F)

@@ -7,13 +7,13 @@ import retrofit2.http.*
 
 interface ApiService {
 
-    // ===== AUTENTICACIÓN =====
+
     @POST("login")
     fun login(@Body solicitud: LoginSolicitud): Call<RespuestaLogin>
 
-    // ===== CITAS / RESERVACIONES =====
+
     @GET("reservaciones")
-    fun obtenerCitas(): Call<List<CitaResponse>>  // Directo sin wrapper
+    fun obtenerCitas(): Call<List<CitaResponse>>
 
     @GET("reservaciones/{id}")
     fun obtenerCita(@Path("id") id: Long): Call<RespuestaApi<CitaResponse>>
@@ -30,7 +30,7 @@ interface ApiService {
     @DELETE("reservaciones/{id}")
     fun eliminarCita(@Path("id") id: Long): Call<RespuestaApi<String>>
 
-    // ===== CLIENTES =====
+
     @GET("clientes")
     fun obtenerClientes(): Call<RespuestaApi<List<ClienteResponse>>>
 
@@ -46,14 +46,14 @@ interface ApiService {
     @DELETE("clientes/{id}")
     fun eliminarCliente(@Path("id") id: Long): Call<RespuestaApi<String>>
 
-    // ===== SERVICIOS =====
+
     @GET("servicios")
     fun obtenerServicios(): Call<RespuestaApi<List<ServicioResponse>>>
 
     @GET("servicios/{id}")
     fun obtenerServicio(@Path("id") id: Long): Call<RespuestaApi<ServicioResponse>>
 
-    // ===== EMPLEADOS =====
+
     @GET("empleados")
     fun obtenerEmpleados(): Call<RespuestaApi<List<EmpleadoResponse>>>
 

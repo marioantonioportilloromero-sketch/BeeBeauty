@@ -14,12 +14,12 @@ data class CitaResponse(
     val hora: String?,
     val estado: String,
     val notas: String?,
-    // Cambiar de String? a List<ServicioDetalle>?
+
     @SerializedName("servicios_detalle") val serviciosDetalle: List<ServicioDetalle>?,
     @SerializedName("total_precio") val totalPrecio: Double?,
     @SerializedName("motivo_cancelacion") val motivoCancelacion: String? = null
 ) {
-    // Propiedad calculada para obtener nombres de servicios
+
     val serviciosNombres: String
         get() = serviciosDetalle?.joinToString(", ") { it.nombre } ?: ""
 }
